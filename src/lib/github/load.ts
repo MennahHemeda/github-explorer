@@ -1,16 +1,17 @@
 import { getAllRepos } from "./repos";
 import { getUser } from "./users";
-import { GitHubNotFoundError, GitHubRateLimitError } from "./errors";
+import { GitHubNetworkError, GitHubNotFoundError, GitHubRateLimitError } from "./errors";
 import type { GitHubUser, Repo } from "./types";
 
 export type LoadResult<T> =
   | ({ status: "ok" } & T)
   | { status: "not-found" }
-  | { status: "rate-limited"; retryInMinutes: number | null };
+  | { status: "rate-limited"; retryInMinutes: number | null }
+  | { status: "unreachable" };
 
 /**
- * Runs a GitHub loader and turns the two *expected* failures (unknown user,
- * rate limit) into values the page can render. Anything else is re-thrown
+ * Runs a GitHub loader and turns the *expected* failures (unknown user,
+ * rate limit, GitHub unreachable) into values the page can render. Anything else is re-thrown
  * and handled by the nearest error.tsx.
  */
 export async function settle<T extends object>(load: () => Promise<T>): Promise<LoadResult<T>> {
@@ -25,6 +26,9 @@ export async function settle<T extends object>(load: () => Promise<T>): Promise<
         ? Math.max(1, Math.ceil((error.resetAt.getTime() - Date.now()) / 60_000))
         : null;
       return { status: "rate-limited", retryInMinutes };
+    }
+    if (error instanceof GitHubNetworkError) {
+      return { status: "unreachable" };
     }
     throw error;
   }

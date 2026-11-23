@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { isValidUsername, loadProfile } from "@/lib/github";
 import { AiSummary } from "@/components/ai-summary";
 import { ProfileCard } from "@/components/profile-card";
-import { RateLimitNotice } from "@/components/rate-limit-notice";
+import { RateLimitNotice, UnreachableNotice } from "@/components/rate-limit-notice";
 import { RepoList } from "@/components/repo-list";
 
 export async function generateMetadata(props: PageProps<"/users/[username]">): Promise<Metadata> {
@@ -26,6 +26,9 @@ export default async function UserPage(props: PageProps<"/users/[username]">) {
   }
   if (result.status === "rate-limited") {
     return <RateLimitNotice retryInMinutes={result.retryInMinutes} />;
+  }
+  if (result.status === "unreachable") {
+    return <UnreachableNotice />;
   }
 
   const { user, repos } = result;

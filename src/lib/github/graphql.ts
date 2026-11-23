@@ -1,4 +1,4 @@
-import { buildHeaders, DEFAULT_REVALIDATE_SECONDS, GITHUB_API_URL, toError, type GitHubFetchOptions } from "./client";
+import { buildHeaders, DEFAULT_REVALIDATE_SECONDS, fetchWithRetry, GITHUB_API_URL, toError, type GitHubFetchOptions } from "./client";
 import { GitHubError, GitHubNotFoundError } from "./errors";
 
 interface GraphQLResponse<T> {
@@ -20,7 +20,7 @@ export async function githubGraphQL<T>(
     throw new GitHubError("The GitHub GraphQL API requires GITHUB_TOKEN to be set.", 401);
   }
 
-  const response = await fetch(`${GITHUB_API_URL}/graphql`, {
+  const response = await fetchWithRetry(`${GITHUB_API_URL}/graphql`, {
     method: "POST",
     headers: { ...buildHeaders(), "Content-Type": "application/json" },
     body: JSON.stringify({ query, variables }),

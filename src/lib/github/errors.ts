@@ -29,3 +29,12 @@ export class GitHubRateLimitError extends GitHubError {
     this.name = "GitHubRateLimitError";
   }
 }
+
+/** GitHub could not be reached at all (network down, DNS, connection reset or timeout). */
+export class GitHubNetworkError extends GitHubError {
+  constructor(cause: unknown) {
+    super("Could not reach the GitHub API. Check the internet connection and try again.", 0);
+    this.name = "GitHubNetworkError";
+    this.cause = cause;
+  }
+}

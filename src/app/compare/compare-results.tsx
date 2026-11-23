@@ -10,7 +10,7 @@ import {
 import { CompareTable } from "@/components/compare/compare-table";
 import { CompareUserHeader } from "@/components/compare/user-header";
 import { ContributionChart } from "@/components/compare/contribution-chart";
-import { RateLimitNotice } from "@/components/rate-limit-notice";
+import { RateLimitNotice, UnreachableNotice } from "@/components/rate-limit-notice";
 
 const COLORS = { left: "var(--series-1)", right: "var(--series-2)" };
 
@@ -38,6 +38,9 @@ export async function CompareResults({ a, b }: { a: string; b: string }) {
   for (const result of [left, right]) {
     if (result.status === "rate-limited") {
       return <RateLimitNotice retryInMinutes={result.retryInMinutes} />;
+    }
+    if (result.status === "unreachable") {
+      return <UnreachableNotice />;
     }
   }
   const missing = [

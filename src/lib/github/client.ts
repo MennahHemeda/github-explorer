@@ -1,4 +1,4 @@
-import { GitHubError, GitHubNotFoundError, GitHubRateLimitError } from "./errors";
+import { GitHubError, GitHubNetworkError, GitHubNotFoundError, GitHubRateLimitError } from "./errors";
 
 export const GITHUB_API_URL = "https://api.github.com";
 
@@ -54,7 +54,7 @@ export function toError(response: Response, path: string): GitHubError {
  * can read headers (e.g. the `Link` header for pagination).
  */
 async function request(path: string, options: GitHubFetchOptions = {}): Promise<Response> {
-  const response = await fetch(`${GITHUB_API_URL}${path}`, {
+  const response = await fetchWithRetry(`${GITHUB_API_URL}${path}`, {
     headers: buildHeaders(),
     next: { revalidate: options.revalidate ?? DEFAULT_REVALIDATE_SECONDS },
   });
@@ -63,6 +63,25 @@ async function request(path: string, options: GitHubFetchOptions = {}): Promise<
     throw toError(response, path);
   }
   return response;
+}
+
+const NETWORK_RETRIES = 2;
+const REQUEST_TIMEOUT_MS = 15_000;
+
+/**
+ * fetch() throws (instead of returning a response) when the connection itself fails:
+ * DNS, reset, timeout. Those failures are usually momentary, so retry a couple of times
+ * with a short back-off before giving up with a clear GitHubNetworkError.
+ */
+export async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await fetch(url, { ...init, signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+    } catch (error) {
+      if (attempt >= NETWORK_RETRIES) throw new GitHubNetworkError(error);
+      await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt));
+    }
+  }
 }
 
 /** GET a single JSON resource from the GitHub REST API. */
@@ -102,9 +121,27 @@ export async function githubFetchAllPages<T>(
   const lastPage = Math.min(getLastPage(firstResponse.headers.get("link")), maxPages);
   if (lastPage <= 1) return firstPage;
 
-  const remainingPages = await Promise.all(
-    Array.from({ length: lastPage - 1 }, (_, i) => githubFetch<T[]>(pageUrl(i + 2), options)),
+  const pageNumbers = Array.from({ length: lastPage - 1 }, (_, i) => i + 2);
+  const remainingPages = await mapWithConcurrency(pageNumbers, MAX_PARALLEL_PAGES, (page) =>
+    githubFetch<T[]>(pageUrl(page), options),
   );
 
   return firstPage.concat(...remainingPages);
+}
+
+/** Pages fetched at the same time. Enough to be fast, few enough not to flood the connection. */
+const MAX_PARALLEL_PAGES = 5;
+
+/** Like Promise.all(items.map(fn)), but with at most `limit` calls running at once. Keeps order. */
+async function mapWithConcurrency<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const index = next++;
+      results[index] = await fn(items[index]);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
 }

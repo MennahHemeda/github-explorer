@@ -72,6 +72,9 @@ export async function POST(request: Request) {
   if (result.status === "rate-limited") {
     return textError("GitHub rate limit reached. Please try again in a few minutes.", 429);
   }
+  if (result.status === "unreachable") {
+    return textError("Couldn't reach GitHub. Check the internet connection and try again.", 502);
+  }
 
   const ai = await streamTextWithFallback(MODEL_CANDIDATES, {
     system: PROFILE_ANALYST_SYSTEM_PROMPT,
