@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isValidUsername, loadProfile } from "@/lib/github";
+import { AiSummary } from "@/components/ai-summary";
 import { ProfileCard } from "@/components/profile-card";
 import { RateLimitNotice } from "@/components/rate-limit-notice";
 import { RepoList } from "@/components/repo-list";
@@ -41,6 +42,7 @@ export default async function UserPage(props: PageProps<"/users/[username]">) {
           Compare {user.login} with another user →
         </Link>
       </div>
+      <AiSummary username={user.login} />
       <RepoList repos={repos} />
     </div>
   );
