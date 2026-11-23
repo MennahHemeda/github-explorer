@@ -1,15 +1,15 @@
 import { GitHubError, GitHubNotFoundError, GitHubRateLimitError } from "./errors";
 
-const GITHUB_API_URL = "https://api.github.com";
+export const GITHUB_API_URL = "https://api.github.com";
 
 /** How long (seconds) Next.js may reuse a cached GitHub response before refetching. */
 export const DEFAULT_REVALIDATE_SECONDS = 300;
 
-interface GitHubFetchOptions {
+export interface GitHubFetchOptions {
   revalidate?: number;
 }
 
-function buildHeaders(): HeadersInit {
+export function buildHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
@@ -23,9 +23,12 @@ function buildHeaders(): HeadersInit {
   return headers;
 }
 
-function toError(response: Response, path: string): GitHubError {
+export function toError(response: Response, path: string): GitHubError {
   if (response.status === 404) {
     return new GitHubNotFoundError(path);
+  }
+  if (response.status === 401) {
+    return new GitHubError("GitHub rejected the access token. Check GITHUB_TOKEN.", 401);
   }
 
   const remaining = response.headers.get("x-ratelimit-remaining");

@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  getAllRepos,
-  getUser,
-  GitHubNotFoundError,
-  GitHubRateLimitError,
-  isValidUsername,
-} from "@/lib/github";
+import { isValidUsername, loadProfile } from "@/lib/github";
 import { ProfileCard } from "@/components/profile-card";
+import { RateLimitNotice } from "@/components/rate-limit-notice";
 import { RepoList } from "@/components/repo-list";
 
 export async function generateMetadata(props: PageProps<"/users/[username]">): Promise<Metadata> {
@@ -37,41 +33,15 @@ export default async function UserPage(props: PageProps<"/users/[username]">) {
   return (
     <div className="flex flex-col gap-8">
       <ProfileCard user={user} totalStars={totalStars} />
+      <div className="-mt-4 flex justify-end">
+        <Link
+          href={`/compare?a=${user.login}`}
+          className="text-sm font-medium text-zinc-600 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
+        >
+          Compare {user.login} with another user →
+        </Link>
+      </div>
       <RepoList repos={repos} />
-    </div>
-  );
-}
-
-/**
- * Loads the profile and all repositories in parallel (two requests at once, not one after another)
- * and turns the expected failures into states the page can render.
- */
-async function loadProfile(username: string) {
-  try {
-    const [user, repos] = await Promise.all([getUser(username), getAllRepos(username)]);
-    return { status: "ok", user, repos } as const;
-  } catch (error) {
-    if (error instanceof GitHubNotFoundError) {
-      return { status: "not-found" } as const;
-    }
-    if (error instanceof GitHubRateLimitError) {
-      const retryInMinutes = error.resetAt
-        ? Math.max(1, Math.ceil((error.resetAt.getTime() - Date.now()) / 60_000))
-        : null;
-      return { status: "rate-limited", retryInMinutes } as const;
-    }
-    throw error; // Unexpected: handled by error.tsx
-  }
-}
-
-function RateLimitNotice({ retryInMinutes: minutes }: { retryInMinutes: number | null }) {
-  return (
-    <div className="mx-auto max-w-md pt-16 text-center">
-      <h1 className="text-2xl font-semibold">Too many requests</h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-        The GitHub API rate limit has been reached.
-        {minutes && ` Please try again in about ${minutes} minute${minutes === 1 ? "" : "s"}.`}
-      </p>
     </div>
   );
 }
