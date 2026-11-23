@@ -1,8 +1,8 @@
 # GitHub Profile Explorer
 
-Search any GitHub user, browse **all** of their repositories, compare two developers side by side, get an **AI analysis** of a profile, and keep **private notes** on users and repositories.
+A pastel, game-styled explorer for GitHub: search any user, see a year of their activity, browse **all** of their repositories, compare two developers side by side, get an **AI analysis** of a profile, and keep **private notes** on users and repositories.
 
-**Live demo:** _add your Vercel link here_
+**Live demo:** https://github-explorer-lilac-one.vercel.app
 **Stack:** Next.js 16 (App Router) · TypeScript (strict) · Tailwind CSS 4 · GitHub REST + GraphQL APIs · Vercel AI SDK + Google Gemini · Neon Postgres · deployed on Vercel
 
 ---
@@ -13,6 +13,7 @@ Search any GitHub user, browse **all** of their repositories, compare two develo
 |---|---|---|
 | Search users | `/` | Username is validated before any API call |
 | Profile + all repositories | `/users/[username]` | Avatar, bio, stats; **every** repo (follows pagination), filter by name/language, sort by stars/updated/name, "Show more" paging |
+| Activity map | Profile page | A year of daily contributions as a pixel grid, with total, longest and current streak and busiest weekday. Streams in on its own (`<Suspense>`), so the rest of the profile never waits for it |
 | Compare two users | `/compare?a=…&b=…` | Repos, stars, forks, followers, **commits and commit frequency (last 12 months)**, active weeks, languages; winner per row; weekly contributions chart with hover + keyboard support and a data table |
 | AI profile analysis | Profile page | Streams a structured summary (Summary, Strengths, Notable projects, Activity) as it is written |
 | Notes | Profile page, repo cards, `/notes`, home page | Notes on a user or on a specific repo; create / edit / delete; shown on the home page as soon as you open the app |
@@ -29,7 +30,7 @@ Search any GitHub user, browse **all** of their repositories, compare two develo
 ### Performance and scale
 - **Caching:** every GitHub response is cached by Next.js for 5 minutes (`next: { revalidate: 300 }`), so repeat visits and the AI route reuse the same data without new API calls.
 - **All repositories, fetched efficiently:** the first page's `Link` header gives the page count. The remaining pages are fetched in parallel with a **concurrency limit of 5**, so a user with 1,000+ repos loads quickly without flooding the connection.
-- **Commit frequency from one GraphQL query** (`contributionsCollection`) instead of one REST call per repository.
+- **Commit frequency and the activity map from one GraphQL query** (`contributionsCollection`) instead of one REST call per repository. The profile and compare pages share the cached result.
 - **Parallel requests:** the profile and repos load at the same time; comparing two users runs six requests at once.
 - **Small payloads:** API responses are trimmed to the fields the UI uses before they're cached or sent to the browser. The repo list renders 30 cards at a time.
 - **Resilience:** dropped connections are retried with back-off. A missing user, the rate limit (with the reset time) and GitHub being unreachable each have their own message.

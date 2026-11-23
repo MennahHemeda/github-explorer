@@ -68,16 +68,16 @@ export function RepoList({ repos, login, notesByRepo }: RepoListProps) {
 
   const visible = filtered.slice(0, visibleCount);
   const controlClass =
-    "h-10 rounded-lg border border-zinc-300 bg-white px-3 text-sm dark:border-zinc-700 dark:bg-zinc-900";
+    "field h-10 px-3 text-sm";
 
   return (
     <section aria-labelledby="repos-heading">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 id="repos-heading" className="text-lg font-semibold">
+        <h2 id="repos-heading" className="text-2xl">
           Repositories <span className="text-zinc-500">({repos.length})</span>
         </h2>
 
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
           <input
             type="search"
             value={query}
@@ -128,7 +128,7 @@ export function RepoList({ repos, login, notesByRepo }: RepoListProps) {
         </p>
       ) : (
         <>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+          <ul className="mt-4 grid gap-8 sm:grid-cols-2">
             {visible.map((repo) => (
               <li key={repo.id}>
                 <RepoCard repo={repo} login={login} notes={notesByRepo[repo.name] ?? []} />
@@ -144,7 +144,7 @@ export function RepoList({ repos, login, notesByRepo }: RepoListProps) {
               <button
                 type="button"
                 onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
-                className="rounded-lg border border-zinc-300 px-4 py-2 font-medium text-zinc-900 transition hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800"
+                className="btn btn-quiet px-4 py-2 text-sm"
               >
                 Show more
               </button>

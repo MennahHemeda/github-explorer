@@ -32,7 +32,7 @@ export function NoteItem({ note }: { note: Note }) {
   const edited = note.updatedAt !== note.createdAt;
 
   return (
-    <li className={`rounded-lg bg-zinc-50 px-3 py-2 dark:bg-zinc-800/50 ${isDeleting ? "opacity-50" : ""}`}>
+    <li className={`rounded-lg bg-zinc-50 px-3 py-2 ${isDeleting ? "opacity-50" : ""}`}>
       <p className="whitespace-pre-wrap break-words text-sm">{note.body}</p>
       <div className="mt-1.5 flex items-center justify-between gap-2 text-xs text-zinc-500">
         <span>
@@ -44,7 +44,7 @@ export function NoteItem({ note }: { note: Note }) {
           <input type="hidden" name="noteId" value={note.id} />
           {confirmDelete ? (
             <>
-              <button type="submit" disabled={isDeleting} className="font-medium text-red-600 hover:underline dark:text-red-400">
+              <button type="submit" disabled={isDeleting} className="font-medium text-red-600 hover:underline">
                 Confirm delete
               </button>
               <button type="button" onClick={() => setConfirmDelete(false)} className="hover:underline">
@@ -53,7 +53,7 @@ export function NoteItem({ note }: { note: Note }) {
             </>
           ) : (
             <>
-              <button type="button" onClick={() => setIsEditing(true)} className="hover:text-zinc-900 hover:underline dark:hover:text-zinc-100">
+              <button type="button" onClick={() => setIsEditing(true)} className="hover:text-zinc-900 hover:underline">
                 Edit
               </button>
               <button type="button" onClick={() => setConfirmDelete(true)} className="hover:text-red-600 hover:underline">
@@ -63,7 +63,7 @@ export function NoteItem({ note }: { note: Note }) {
           )}
         </form>
       </div>
-      {deleteState.error && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{deleteState.error}</p>}
+      {deleteState.error && <p className="mt-1 text-xs text-red-600">{deleteState.error}</p>}
     </li>
   );
 }

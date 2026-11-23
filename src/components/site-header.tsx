@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PixelLogo } from "./pixel-logo";
 
 const NAV_LINKS = [
   { href: "/", label: "Search" },
@@ -8,18 +9,15 @@ const NAV_LINKS = [
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <Link href="/" className="font-semibold tracking-tight">
-          GitHub Explorer
+    <header className="border-b-[3px] border-zinc-900 bg-sky">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5 font-game text-xl font-semibold" aria-label="GitHub Explorer home">
+          <PixelLogo />
+          <span className="hidden sm:inline">GitHub Explorer</span>
         </Link>
-        <nav className="flex gap-5 text-sm">
+        <nav className="flex gap-0.5 whitespace-nowrap font-game text-sm sm:gap-2 sm:text-base">
           {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-            >
+            <Link key={link.href} href={link.href} className="px-2 py-1 hover:bg-white/60">
               {link.label}
             </Link>
           ))}

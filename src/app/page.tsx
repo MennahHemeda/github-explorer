@@ -1,9 +1,9 @@
 import Link from "next/link";
+import { FeatureBoard } from "@/components/feature-board";
 import { NotesOverview } from "@/components/notes/notes-overview";
 import { SearchForm } from "@/components/search-form";
 import { getRecentNotes } from "@/lib/notes/queries";
 
-const EXAMPLE_USERS = ["octocat", "torvalds", "gaearon", "sindresorhus"];
 const RECENT_NOTES_ON_HOME = 6;
 
 export default async function HomePage() {
@@ -11,38 +11,35 @@ export default async function HomePage() {
   const recentNotes = await getRecentNotes(RECENT_NOTES_ON_HOME);
 
   return (
-    <div className="flex flex-col gap-16">
-    <div className="mx-auto flex max-w-2xl flex-col items-center pt-16 text-center sm:pt-24">
-      <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">GitHub Profile Explorer</h1>
-      <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-        Search any GitHub user to see their profile and every public repository.
-      </p>
+    <div className="flex flex-col gap-8">
+      <div className="grid items-center gap-8 pt-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:pt-8">
+        <section>
+          <h1 className="text-5xl leading-tight sm:text-6xl lg:text-7xl">GitHub Explorer</h1>
+          <p className="mt-4 max-w-lg text-lg text-zinc-600">
+            Look up any developer, browse every repository, compare two profiles and keep notes along the way.
+          </p>
 
-      <div className="mt-8 w-full">
-        <SearchForm autoFocus />
+          {/* The search is an RPG dialog box. */}
+          <div className="window mt-8 p-6 pb-9 sm:p-8 sm:pb-10" data-tone="sky">
+            <p className="mb-4 font-game text-xl">Who do you want to look up?</p>
+            <SearchForm autoFocus />
+            <span aria-hidden className="dialog-caret absolute bottom-2 right-4 font-game text-lg">
+              ▼
+            </span>
+          </div>
+        </section>
+
+        <FeatureBoard />
       </div>
-
-      <p className="mt-6 text-sm text-zinc-500">
-        Try:{" "}
-        {EXAMPLE_USERS.map((username, index) => (
-          <span key={username}>
-            {index > 0 && ", "}
-            <Link href={`/users/${username}`} className="font-medium text-zinc-900 hover:underline dark:text-zinc-100">
-              {username}
-            </Link>
-          </span>
-        ))}
-      </p>
-    </div>
 
       {recentNotes.length > 0 && (
         <section aria-labelledby="recent-notes-heading">
-          <div className="mb-3 flex items-baseline justify-between">
-            <h2 id="recent-notes-heading" className="text-lg font-semibold">
+          <div className="mb-4 flex items-baseline justify-between">
+            <h2 id="recent-notes-heading" className="text-2xl">
               Your recent notes
             </h2>
-            <Link href="/notes" className="text-sm text-zinc-600 hover:underline dark:text-zinc-400">
-              See all notes →
+            <Link href="/notes" className="font-game text-base hover:underline">
+              See all notes
             </Link>
           </div>
           <NotesOverview notes={recentNotes} />

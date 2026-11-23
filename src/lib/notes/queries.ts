@@ -22,18 +22,30 @@ function toNote(row: NoteRow): Note {
   };
 }
 
+/**
+ * Reading notes must never break a page: if the database is unreachable,
+ * search and profiles keep working and simply show no notes (saving still reports the error).
+ */
+async function readSafely(query: () => Promise<NoteRow[]>): Promise<Note[]> {
+  try {
+    return (await query()).map(toNote);
+  } catch (error) {
+    console.error("Could not load notes:", error);
+    return [];
+  }
+}
+
 /** All of the current visitor's notes about one GitHub user (profile + repos), newest first. */
 export async function getNotesForProfile(login: string): Promise<Note[]> {
   const visitorId = await getVisitorId();
   if (!visitorId || !isDatabaseConfigured()) return [];
 
-  const rows = (await db()`
+  return readSafely(async () => (await db()`
     SELECT id, github_login, repo_name, body, created_at, updated_at
     FROM notes
     WHERE visitor_id = ${visitorId} AND github_login = ${login.toLowerCase()}
     ORDER BY created_at DESC
-  `) as NoteRow[];
-  return rows.map(toNote);
+  `) as NoteRow[]);
 }
 
 /** The current visitor's most recently edited notes, across all users. */
@@ -41,14 +53,13 @@ export async function getRecentNotes(limit = 100): Promise<Note[]> {
   const visitorId = await getVisitorId();
   if (!visitorId || !isDatabaseConfigured()) return [];
 
-  const rows = (await db()`
+  return readSafely(async () => (await db()`
     SELECT id, github_login, repo_name, body, created_at, updated_at
     FROM notes
     WHERE visitor_id = ${visitorId}
     ORDER BY updated_at DESC
     LIMIT ${limit}
-  `) as NoteRow[];
-  return rows.map(toNote);
+  `) as NoteRow[]);
 }
 
 export async function insertNote(visitorId: string, login: string, repo: string | null, body: string): Promise<void> {

@@ -28,19 +28,19 @@ export function ProfileCard({ user, totalStars }: ProfileCardProps) {
   ].filter((item): item is DetailItem => Boolean(item));
 
   return (
-    <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+    <section className="window p-6" data-tone="sky">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-start lg:flex-col">
         <Image
           src={user.avatar_url}
           alt={`${user.login}'s avatar`}
           width={112}
           height={112}
           priority
-          className="h-28 w-28 rounded-full border border-zinc-200 dark:border-zinc-700"
+          className="pixel-frame h-28 w-28"
         />
 
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-semibold tracking-tight">{user.name ?? user.login}</h1>
+          <h1 className="text-3xl">{user.name ?? user.login}</h1>
           <a
             href={user.html_url}
             target="_blank"
@@ -49,9 +49,9 @@ export function ProfileCard({ user, totalStars }: ProfileCardProps) {
           >
             @{user.login}
           </a>
-          {user.bio && <p className="mt-3 text-zinc-700 dark:text-zinc-300">{user.bio}</p>}
+          {user.bio && <p className="mt-3 text-zinc-700">{user.bio}</p>}
 
-          <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+          <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-1 text-sm sm:grid-cols-2 lg:grid-cols-1">
             {details.map((item) => (
               <div key={item.label} className="flex gap-2">
                 <dt className="text-zinc-500">{item.label}:</dt>
@@ -70,14 +70,14 @@ export function ProfileCard({ user, totalStars }: ProfileCardProps) {
         </div>
       </div>
 
-      <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="flex flex-col-reverse rounded-lg bg-zinc-50 p-3 text-center dark:bg-zinc-800/60"
+            className="flex flex-col-reverse bg-zinc-50 p-3 text-center"
           >
             <dt className="text-xs text-zinc-500">{stat.label}</dt>
-            <dd className="text-xl font-semibold">{formatCount(stat.value)}</dd>
+            <dd className="font-game text-2xl">{formatCount(stat.value)}</dd>
           </div>
         ))}
       </dl>

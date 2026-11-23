@@ -19,8 +19,8 @@ export function UnreachableNotice() {
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mx-auto max-w-md pt-16 text-center">
-      <h1 className="text-2xl font-semibold">{title}</h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">{children}</p>
+      <h1 className="text-3xl">{title}</h1>
+      <p className="mt-2 text-zinc-600">{children}</p>
     </div>
   );
 }

@@ -29,11 +29,11 @@ export function AiSummary({ username }: { username: string }) {
   return (
     <section
       aria-labelledby="ai-heading"
-      className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900"
+      className="window p-6" data-tone="lilac"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 id="ai-heading" className="text-lg font-semibold">
+          <h2 id="ai-heading" className="text-2xl">
             AI profile analysis
           </h2>
           <p className="text-sm text-zinc-500">A short summary of skills, projects and activity, written by AI.</p>
@@ -51,22 +51,22 @@ export function AiSummary({ username }: { username: string }) {
       </div>
 
       {error && (
-        <p role="alert" className="mt-4 text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="mt-4 text-sm text-red-600">
           {error.message || "Something went wrong. Please try again."}
         </p>
       )}
 
       {emptyResult && !isLoading && !error && (
-        <p role="alert" className="mt-4 text-sm text-amber-700 dark:text-amber-400">
+        <p role="alert" className="mt-4 text-sm text-amber-700">
           The AI finished without returning any text. Please try again.
         </p>
       )}
 
       {isLoading && !hasResult && (
         <div className="mt-5 animate-pulse space-y-2" aria-label="Generating analysis">
-          <div className="h-4 w-1/3 rounded bg-zinc-200 dark:bg-zinc-800" />
-          <div className="h-3 w-full rounded bg-zinc-100 dark:bg-zinc-800/60" />
-          <div className="h-3 w-5/6 rounded bg-zinc-100 dark:bg-zinc-800/60" />
+          <div className="h-4 w-1/3 rounded bg-zinc-200" />
+          <div className="h-3 w-full rounded bg-zinc-100" />
+          <div className="h-3 w-5/6 rounded bg-zinc-100" />
         </div>
       )}
 
@@ -105,7 +105,7 @@ function AnalysisText({ text }: { text: string }) {
       {blocks.map((block, i) => (
         <div key={i}>
           {block.heading && <h3 className="mb-1.5 font-semibold">{block.heading}</h3>}
-          <ul className="list-disc space-y-1 pl-5 text-sm text-zinc-700 dark:text-zinc-300">
+          <ul className="list-disc space-y-1 pl-5 text-sm text-zinc-700">
             {block.items.map((item, j) => (
               <li key={j}>{item}</li>
             ))}
@@ -117,6 +117,6 @@ function AnalysisText({ text }: { text: string }) {
 }
 
 const primaryButton =
-  "rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300";
+  "btn px-4 py-2 text-sm";
 const secondaryButton =
-  "rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800";
+  "btn btn-quiet px-4 py-2 text-sm";

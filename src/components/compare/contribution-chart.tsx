@@ -88,7 +88,7 @@ export function ContributionChart({ series }: { series: ChartSeries[] }) {
     <figure>
       <figcaption className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <span className="font-semibold">Weekly contributions, last 12 months</span>
-        <span className="flex gap-4 text-sm text-zinc-600 dark:text-zinc-400">
+        <span className="flex gap-4 text-sm text-zinc-600">
           {series.map((s) => (
             <span key={s.label} className="inline-flex items-center gap-1.5">
               <span aria-hidden className="h-0.5 w-4 rounded" style={{ backgroundColor: s.color }} />
@@ -118,7 +118,7 @@ export function ContributionChart({ series }: { series: ChartSeries[] }) {
                 x2={PAD.left + PLOT_W}
                 y1={y(value)}
                 y2={y(value)}
-                className="stroke-zinc-200 dark:stroke-zinc-800"
+                className="stroke-zinc-200"
                 strokeWidth={1}
               />
               <text x={PAD.left - 8} y={y(value)} dy="0.32em" textAnchor="end" className="fill-zinc-500 text-[11px]">
@@ -154,7 +154,7 @@ export function ContributionChart({ series }: { series: ChartSeries[] }) {
               x={PAD.left + PLOT_W + 8}
               y={s.y}
               dy="0.32em"
-              className="fill-zinc-700 text-[12px] font-medium dark:fill-zinc-300"
+              className="fill-zinc-700 text-[12px] font-medium"
             >
               {s.label}
             </text>
@@ -168,7 +168,7 @@ export function ContributionChart({ series }: { series: ChartSeries[] }) {
                 x2={x(active.i)}
                 y1={PAD.top}
                 y2={PAD.top + PLOT_H}
-                className="stroke-zinc-400 dark:stroke-zinc-500"
+                className="stroke-zinc-400"
                 strokeWidth={1}
               />
               {series.map((s, si) => (
@@ -178,7 +178,7 @@ export function ContributionChart({ series }: { series: ChartSeries[] }) {
                   cy={y(values[si][active.i])}
                   r={4.5}
                   fill={s.color}
-                  className="stroke-white dark:stroke-zinc-900"
+                  className="stroke-white"
                   strokeWidth={2}
                 />
               ))}
@@ -189,7 +189,7 @@ export function ContributionChart({ series }: { series: ChartSeries[] }) {
         {active && (
           <div
             role="status"
-            className="pointer-events-none absolute top-0 z-10 min-w-36 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs shadow-md dark:border-zinc-700 dark:bg-zinc-900"
+            className="pointer-events-none absolute top-0 z-10 min-w-36 window px-3 py-2 text-xs"
             style={{
               left: `${tooltipLeftPct}%`,
               transform: tooltipLeftPct > 60 ? "translateX(calc(-100% - 12px))" : "translateX(12px)",
@@ -198,11 +198,11 @@ export function ContributionChart({ series }: { series: ChartSeries[] }) {
             <p className="mb-1 text-zinc-500">Week of {weekFormat.format(new Date(active.week))}</p>
             {series.map((s, si) => (
               <p key={s.label} className="flex items-center justify-between gap-4">
-                <span className="inline-flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400">
+                <span className="inline-flex items-center gap-1.5 text-zinc-600">
                   <span aria-hidden className="h-2 w-2 rounded-full" style={{ backgroundColor: s.color }} />
                   {s.label}
                 </span>
-                <strong className="text-zinc-900 dark:text-zinc-100">{values[si][active.i]}</strong>
+                <strong className="text-zinc-900">{values[si][active.i]}</strong>
               </p>
             ))}
           </div>
@@ -210,7 +210,7 @@ export function ContributionChart({ series }: { series: ChartSeries[] }) {
       </div>
 
       <details className="mt-3 text-sm">
-        <summary className="cursor-pointer text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100">
+        <summary className="cursor-pointer text-zinc-500 hover:text-zinc-900">
           Show data as a table
         </summary>
         <div className="mt-2 max-h-64 overflow-y-auto">
@@ -227,7 +227,7 @@ export function ContributionChart({ series }: { series: ChartSeries[] }) {
             </thead>
             <tbody>
               {weeks.map((week, i) => (
-                <tr key={week} className="border-t border-zinc-100 dark:border-zinc-800">
+                <tr key={week} className="border-t border-zinc-100">
                   <td className="py-1">{weekFormat.format(new Date(week))}</td>
                   {values.map((row, si) => (
                     <td key={series[si].label} className="py-1">

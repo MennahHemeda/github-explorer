@@ -1,31 +1,195 @@
 @import "tailwindcss";
 
+/* ─── Pastel RPG theme ───────────────────────────────────────────────
+   The zinc scale (used across all components) is remapped to warm
+   parchment → plum ink, so every existing class picks up the theme.  */
+@theme {
+  --font-sans: var(--font-body), ui-rounded, system-ui, sans-serif;
+  --font-game: var(--font-game-face), ui-rounded, system-ui, sans-serif;
+
+  --color-white: #fffbef;   /* window paper */
+  --color-zinc-50: #fbf1d6; /* parchment page */
+  --color-zinc-100: #f4e6c4;
+  --color-zinc-200: #e8d6a9;
+  --color-zinc-300: #cdb98e;
+  --color-zinc-400: #a08f86;
+  --color-zinc-500: #6b5d74;
+  --color-zinc-600: #574a63;
+  --color-zinc-700: #463a55;
+  --color-zinc-800: #3a2f4b;
+  --color-zinc-900: #2e2440; /* plum ink */
+  --color-zinc-950: #221a31;
+
+  --color-sky: #a9d6f5;
+  --color-peach: #ffc4a3;
+  --color-mint: #bde8c8;
+  --color-lilac: #d9c8f5;
+
+  --color-blue-600: #2f6db5;
+  --color-emerald-50: #bde8c8;
+  --color-emerald-700: #1f7a45;
+  --color-red-600: #b4234d;
+  --color-amber-700: #9a5a0c;
+
+  /* Pixel art has square corners. */
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+}
+
+/* The theme is a daytime world: no automatic dark mode. */
+@custom-variant dark (&:where(.dark-mode-disabled, .dark-mode-disabled *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  /* Chart series colors (checked for color-blind separation and contrast) */
+  --ink: var(--color-zinc-900);
+  --px: 3px;
+  /* Chart series colors (checked for color-blind separation and contrast on the window paper) */
   --series-1: #2a78d6;
   --series-2: #eb6834;
+  /* Activity map: one hue, evenly darker per level (0 = no contributions). */
+  --heat-0: #efe2bf;
+  --heat-1: #a9dcb6;
+  --heat-2: #6fbf87;
+  --heat-3: #3d9459;
+  --heat-4: #22603b;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Everything is sized in rem, so raising the root size scales text, controls and
+   spacing together. Bigger screens get a slightly larger base. */
+html {
+  font-size: 106.25%; /* 17px on phones and tablets */
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --series-1: #3987e5;
-    --series-2: #d95926;
+@media (min-width: 1280px) {
+  html {
+    font-size: 118.75%; /* 19px on laptops and desktops */
+  }
+}
+@media (min-width: 1680px) {
+  html {
+    font-size: 125%; /* 20px on large monitors */
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  background: var(--color-zinc-50);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-game);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+/* ─── RPG dialog window ──────────────────────────────────────────────
+   Four flat shadows draw the border and leave the corners empty,
+   which gives the notched pixel corner; a fifth is the drop shadow.  */
+.window {
+  position: relative;
+  background: var(--color-white);
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--ink),
+    0 var(--px) 0 0 var(--ink),
+    calc(-1 * var(--px)) 0 0 0 var(--ink),
+    var(--px) 0 0 0 var(--ink),
+    0 calc(var(--px) * 3) 0 0 rgb(46 36 64 / 0.18);
+}
+
+/* A colored band at the top tells what kind of window it is. */
+.window[data-tone] {
+  border-top: 10px solid var(--tone);
+}
+.window[data-tone="sky"] { --tone: var(--color-sky); }
+.window[data-tone="peach"] { --tone: var(--color-peach); }
+.window[data-tone="mint"] { --tone: var(--color-mint); }
+.window[data-tone="lilac"] { --tone: var(--color-lilac); }
+
+/* ─── Buttons ────────────────────────────────────────────────────── */
+.btn {
+  font-family: var(--font-game);
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--color-peach);
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--ink),
+    0 var(--px) 0 0 var(--ink),
+    calc(-1 * var(--px)) 0 0 0 var(--ink),
+    var(--px) 0 0 0 var(--ink),
+    inset 0 -4px 0 0 rgb(46 36 64 / 0.2);
+  transition: transform 60ms steps(1), background-color 120ms;
+}
+.btn:hover:not(:disabled) {
+  background: #ffb68c;
+}
+/* Pressing the button pushes it down, like a game controller. */
+.btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--ink),
+    0 var(--px) 0 0 var(--ink),
+    calc(-1 * var(--px)) 0 0 0 var(--ink),
+    var(--px) 0 0 0 var(--ink),
+    inset 0 2px 0 0 rgb(46 36 64 / 0.2);
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.btn-quiet {
+  background: var(--color-white);
+}
+.btn-quiet:hover:not(:disabled) {
+  background: var(--color-zinc-100);
+}
+
+/* ─── Inputs ─────────────────────────────────────────────────────── */
+.field {
+  background: var(--color-white);
+  color: var(--ink);
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    inset 3px 3px 0 0 rgb(46 36 64 / 0.12);
+}
+.field::placeholder {
+  color: var(--color-zinc-500);
+}
+
+/* One clear, chunky focus ring for everything you can tab to. */
+:focus-visible {
+  outline: 3px dashed var(--ink);
+  outline-offset: 3px;
+}
+.field:focus-visible {
+  outline-color: var(--series-1);
+}
+
+/* Square pixel-style frame, used around avatars and icons. */
+.pixel-frame {
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--ink),
+    0 var(--px) 0 0 var(--ink),
+    calc(-1 * var(--px)) 0 0 0 var(--ink),
+    var(--px) 0 0 0 var(--ink);
+}
+
+/* The "more text" cursor at the bottom of an RPG dialog box. */
+.dialog-caret {
+  animation: dialog-caret 1s steps(1) infinite;
+}
+@keyframes dialog-caret {
+  50% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialog-caret {
+    animation: none;
+  }
+  .btn {
+    transition: none;
+  }
 }

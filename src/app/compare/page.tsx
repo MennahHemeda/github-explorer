@@ -14,11 +14,11 @@ export default async function ComparePage(props: PageProps<"/compare">) {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Compare two GitHub users</h1>
-        <p className="mt-1 text-zinc-600 dark:text-zinc-400">
+        <h1 className="text-4xl">Compare two GitHub users</h1>
+        <p className="mt-1 text-zinc-600">
           Repositories, stars, followers, languages and commit frequency, side by side.
         </p>
-        <div className="mt-5">
+        <div className="mt-4">
           {/* key: reset the inputs when the URL changes (e.g. Back button) */}
           <CompareForm key={`${a}-${b}`} defaultA={a} defaultB={b} />
         </div>

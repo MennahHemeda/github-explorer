@@ -5,9 +5,10 @@ export function ProfileNotes({ login, notes }: { login: string; notes: Note[] })
   return (
     <section
       aria-labelledby="notes-heading"
-      className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900"
+      className="window p-6"
+      data-tone="peach"
     >
-      <h2 id="notes-heading" className="text-lg font-semibold">
+      <h2 id="notes-heading" className="text-2xl">
         Your notes on {login}
       </h2>
       <p className="mb-4 text-sm text-zinc-500">

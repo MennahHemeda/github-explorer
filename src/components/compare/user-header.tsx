@@ -7,18 +7,18 @@ export function CompareUserHeader({ stats, color }: { stats: UserStats; color: s
   return (
     <Link
       href={`/users/${stats.login}`}
-      className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-600"
+      className="window flex items-center gap-4 p-4 hover:bg-zinc-50"
     >
       <Image
         src={stats.avatarUrl}
         alt={`${stats.login}'s avatar`}
         width={56}
         height={56}
-        className="h-14 w-14 rounded-full"
+        className="pixel-frame h-14 w-14"
       />
       <div className="min-w-0">
-        <p className="flex items-center gap-2 truncate font-semibold">
-          <span aria-hidden className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+        <p className="flex items-center gap-2 truncate font-game text-lg">
+          <span aria-hidden className="h-3 w-3 shrink-0" style={{ backgroundColor: color }} />
           {stats.name ?? stats.login}
         </p>
         <p className="truncate text-sm text-zinc-500">@{stats.login}</p>

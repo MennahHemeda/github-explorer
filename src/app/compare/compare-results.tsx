@@ -9,6 +9,7 @@ import {
 } from "@/lib/github";
 import { CompareTable } from "@/components/compare/compare-table";
 import { CompareUserHeader } from "@/components/compare/user-header";
+import { VersusBadge } from "@/components/compare/versus-badge";
 import { ContributionChart } from "@/components/compare/contribution-chart";
 import { RateLimitNotice, UnreachableNotice } from "@/components/rate-limit-notice";
 
@@ -58,16 +59,17 @@ function Results({ left, right }: { left: UserStats; right: UserStats }) {
   const hasContributions = left.weeklyContributions.length > 0 || right.weeklyContributions.length > 0;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid gap-3 sm:grid-cols-2">
+    <div className="flex flex-col gap-8">
+      <div className="grid items-center gap-8 sm:grid-cols-[1fr_auto_1fr]">
         <CompareUserHeader stats={left} color={COLORS.left} />
+        <VersusBadge />
         <CompareUserHeader stats={right} color={COLORS.right} />
       </div>
 
       <CompareTable left={left} right={right} />
 
       {hasContributions && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="window p-4 sm:p-6">
           <ContributionChart
             series={[
               { label: left.login, color: COLORS.left, weeks: left.weeklyContributions },
@@ -81,18 +83,18 @@ function Results({ left, right }: { left: UserStats; right: UserStats }) {
 }
 
 function Message({ children }: { children: React.ReactNode }) {
-  return <p className="rounded-xl border border-zinc-200 bg-white p-6 text-center dark:border-zinc-800 dark:bg-zinc-900">{children}</p>;
+  return <p className="window p-6 text-center">{children}</p>;
 }
 
 export function CompareResultsSkeleton() {
   return (
-    <div className="flex animate-pulse flex-col gap-6" aria-busy="true" aria-label="Loading comparison">
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="h-24 rounded-xl bg-zinc-200 dark:bg-zinc-800" />
-        <div className="h-24 rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+    <div className="flex animate-pulse flex-col gap-8" aria-busy="true" aria-label="Loading comparison">
+      <div className="grid gap-8 sm:grid-cols-2">
+        <div className="h-24 rounded-xl bg-zinc-200" />
+        <div className="h-24 rounded-xl bg-zinc-200" />
       </div>
-      <div className="h-96 rounded-xl bg-zinc-200 dark:bg-zinc-800" />
-      <div className="h-72 rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+      <div className="h-96 rounded-xl bg-zinc-200" />
+      <div className="h-72 rounded-xl bg-zinc-200" />
     </div>
   );
 }

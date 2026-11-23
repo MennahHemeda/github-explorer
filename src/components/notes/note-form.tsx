@@ -61,11 +61,11 @@ export function NoteForm({
           // Ctrl/Cmd + Enter saves.
           if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) event.currentTarget.form?.requestSubmit();
         }}
-        className="w-full resize-y rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-zinc-800"
+        className="field w-full resize-y px-3 py-2 text-sm"
       />
 
       <div className="flex items-center justify-between gap-2">
-        <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+        <p role="alert" className="text-xs text-red-600">
           {state.error}
         </p>
         <div className="flex gap-2">
@@ -84,6 +84,6 @@ export function NoteForm({
 }
 
 const primaryButton =
-  "rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300";
+  "btn px-3 py-1.5 text-sm";
 const secondaryButton =
-  "rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800";
+  "btn btn-quiet px-3 py-1.5 text-sm";

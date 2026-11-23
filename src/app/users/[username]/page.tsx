@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { isValidUsername, loadProfile } from "@/lib/github";
+import { ActivityMap, ActivityMapSkeleton } from "@/components/activity-map";
 import { AiSummary } from "@/components/ai-summary";
 import { ProfileNotes } from "@/components/notes/profile-notes";
 import { ProfileCard } from "@/components/profile-card";
@@ -39,19 +41,24 @@ export default async function UserPage(props: PageProps<"/users/[username]">) {
   const notesByRepo = groupByRepo(notes);
 
   return (
-    <div className="flex flex-col gap-8">
-      <ProfileCard user={user} totalStars={totalStars} />
-      <div className="-mt-4 flex justify-end">
-        <Link
-          href={`/compare?a=${user.login}`}
-          className="text-sm font-medium text-zinc-600 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
-        >
-          Compare {user.login} with another user →
+    // Desktop: the "character sheet" sits in a sidebar next to the main content. Mobile: one column.
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start">
+      <aside className="flex flex-col gap-8">
+        <ProfileCard user={user} totalStars={totalStars} />
+        <Link href={`/compare?a=${user.login}`} className="btn btn-quiet px-4 py-2.5 text-center">
+          Compare {user.login} with another user
         </Link>
+        <ProfileNotes login={user.login} notes={notesByRepo[""] ?? []} />
+      </aside>
+
+      <div className="flex min-w-0 flex-col gap-8">
+        {/* Streams in on its own, so the rest of the profile shows immediately. */}
+        <Suspense fallback={<ActivityMapSkeleton />}>
+          <ActivityMap username={user.login} />
+        </Suspense>
+        <AiSummary username={user.login} />
+        <RepoList repos={repos} login={user.login} notesByRepo={notesByRepo} />
       </div>
-      <AiSummary username={user.login} />
-      <ProfileNotes login={user.login} notes={notesByRepo[""] ?? []} />
-      <RepoList repos={repos} login={user.login} notesByRepo={notesByRepo} />
     </div>
   );
 }

@@ -78,13 +78,13 @@ export function CompareTable({ left, right }: { left: UserStats; right: UserStat
   });
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="overflow-x-auto window">
       <table className="w-full text-sm">
         <caption className="sr-only">
           Comparison of {left.login} and {right.login}. A check mark shows the higher value.
         </caption>
         <thead>
-          <tr className="border-b border-zinc-200 text-left dark:border-zinc-800">
+          <tr className="border-b border-zinc-200 text-left">
             <th scope="col" className="w-1/3 px-4 py-3 font-medium text-zinc-500">
               Metric
             </th>
@@ -98,7 +98,7 @@ export function CompareTable({ left, right }: { left: UserStats; right: UserStat
         </thead>
         <tbody>
           {rows.map(({ row, winner }) => (
-            <tr key={row.label} className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60">
+            <tr key={row.label} className="border-b border-zinc-100 last:border-0">
               <th scope="row" className="px-4 py-3 text-left font-normal">
                 {row.label}
                 {row.hint && <span className="block text-xs text-zinc-500">{row.hint}</span>}
@@ -115,10 +115,10 @@ export function CompareTable({ left, right }: { left: UserStats; right: UserStat
 
 function Cell({ isWinner, children }: { isWinner: boolean; children: React.ReactNode }) {
   return (
-    <td className={`px-4 py-3 ${isWinner ? "bg-emerald-50 font-semibold dark:bg-emerald-950/40" : ""}`}>
+    <td className={`px-4 py-3 ${isWinner ? "bg-emerald-50 font-semibold" : ""}`}>
       {children}
       {isWinner && (
-        <span className="ml-1.5 text-emerald-700 dark:text-emerald-400" aria-label="higher">
+        <span className="ml-1.5 text-emerald-700" aria-label="higher">
           ✓
         </span>
       )}

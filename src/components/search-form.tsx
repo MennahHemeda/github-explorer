@@ -35,7 +35,7 @@ export function SearchForm({ defaultValue = "", autoFocus = false }: SearchFormP
 
   return (
     <form onSubmit={handleSubmit} className="w-full" noValidate>
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-3 sm:flex-row">
         <label htmlFor="username" className="sr-only">
           GitHub username
         </label>
@@ -50,18 +50,18 @@ export function SearchForm({ defaultValue = "", autoFocus = false }: SearchFormP
           spellCheck={false}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? "username-error" : undefined}
-          className="h-11 flex-1 rounded-lg border border-zinc-300 bg-white px-4 text-sm outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-zinc-800"
+          className="field h-12 flex-1 px-4 text-base"
         />
         <button
           type="submit"
           disabled={isPending}
-          className="h-11 rounded-lg bg-zinc-900 px-5 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className="btn h-12 px-6 text-base"
         >
           {isPending ? "Searching…" : "Search"}
         </button>
       </div>
       {error && (
-        <p id="username-error" role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400">
+        <p id="username-error" role="alert" className="mt-2 text-sm text-red-600">
           {error}
         </p>
       )}
