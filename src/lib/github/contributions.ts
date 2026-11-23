@@ -23,8 +23,9 @@ export interface ContributionSummary {
   /** All contributions in the last 12 months: commits, PRs, issues, reviews. */
   totalContributions: number;
   /**
-   * Contributions to private repositories. GitHub only reports how many (never which days),
-   * and only if the user chose to show private contributions on their profile.
+   * How many of the contributions above were made in private repositories. Only non-zero
+   * when the user chose to show private contributions on their profile; those days are
+   * already included in `days` and the totals.
    */
   privateContributions: number;
   /** Contributions per week, oldest first (about 53 weeks). */

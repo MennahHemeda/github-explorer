@@ -61,7 +61,7 @@ export function ActivityMapView({ days, privateContributions = 0 }: ActivityMapV
   const width = LABEL_WIDTH + columns * STEP;
   const height = LABEL_HEIGHT + 7 * STEP;
   const stats = [
-    { label: "Public contributions", value: formatCount(summary.total) },
+    { label: "Contributions", value: formatCount(summary.total) },
     { label: "Longest streak", value: `${summary.longestStreak} ${summary.longestStreak === 1 ? "day" : "days"}` },
     { label: "Current streak", value: `${summary.currentStreak} ${summary.currentStreak === 1 ? "day" : "days"}` },
     { label: "Busiest day", value: summary.busiestWeekday ?? "None" },
@@ -70,11 +70,12 @@ export function ActivityMapView({ days, privateContributions = 0 }: ActivityMapV
   return (
     <ActivityShell>
       <p className="-mt-3 mb-4 text-sm text-zinc-600">
-        Public activity on {summary.activeDays} of the last {days.length} days.
-        {privateContributions > 0 &&
-          ` Plus ${formatCount(privateContributions)} private ${
-            privateContributions === 1 ? "contribution" : "contributions"
-          }, which GitHub counts but doesn't show by day.`}
+        Active on {summary.activeDays} of the last {days.length} days
+        {privateContributions > 0
+          ? `, including ${formatCount(privateContributions)} private ${
+              privateContributions === 1 ? "contribution" : "contributions"
+            } the user chose to show.`
+          : ". Private activity is only included if the user shares it on GitHub."}
       </p>
 
       <dl className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -96,7 +97,7 @@ export function ActivityMapView({ days, privateContributions = 0 }: ActivityMapV
           className="shrink-0 sm:h-auto sm:w-full"
           shapeRendering="crispEdges"
           role="img"
-          aria-label={`Contribution map: ${summary.total} public contributions in the last year${
+          aria-label={`Contribution map: ${summary.total} contributions in the last year${
             summary.busiestWeekday ? `, most on ${summary.busiestWeekday}s` : ""
           }.`}
         >
