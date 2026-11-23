@@ -12,3 +12,12 @@ CREATE TABLE IF NOT EXISTS notes (
 -- Every query filters by visitor, then by profile (and sorts by newest).
 CREATE INDEX IF NOT EXISTS notes_visitor_login_idx ON notes (visitor_id, github_login, created_at DESC);
 CREATE INDEX IF NOT EXISTS notes_visitor_recent_idx ON notes (visitor_id, updated_at DESC);
+
+-- The latest AI analysis per GitHub user. Served for 24 hours (saves AI quota), and used
+-- as a fallback when every AI model is unavailable.
+CREATE TABLE IF NOT EXISTS ai_analyses (
+  github_login TEXT        PRIMARY KEY,
+  content      TEXT        NOT NULL,
+  model        TEXT        NOT NULL,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);

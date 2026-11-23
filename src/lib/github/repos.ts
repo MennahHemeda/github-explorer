@@ -1,4 +1,5 @@
 import { githubFetchAllPages } from "./client";
+import { MAX_REPOS, REPOS_PER_PAGE } from "./limits";
 import type { GitHubRepoResponse, Repo } from "./types";
 
 /** Keeps only the fields the UI needs, so less data is cached and sent to the client. */
@@ -24,12 +25,13 @@ function toRepo(repo: GitHubRepoResponse): Repo {
 }
 
 /**
- * Fetches ALL public repositories of a user (follows pagination),
+ * Fetches ALL public repositories of a user (follows pagination, up to MAX_REPOS),
  * most recently updated first.
  */
 export async function getAllRepos(username: string): Promise<Repo[]> {
   const repos = await githubFetchAllPages<GitHubRepoResponse>(
     `/users/${encodeURIComponent(username)}/repos?type=owner&sort=updated`,
+    { maxPages: MAX_REPOS / REPOS_PER_PAGE },
   );
   return repos.map(toRepo);
 }

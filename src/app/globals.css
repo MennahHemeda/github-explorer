@@ -158,13 +158,33 @@ h3 {
   color: var(--color-zinc-500);
 }
 
+/* Dropdowns: the browser arrow is replaced by a pixel-art one in the ink color. */
+select.field {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 4' shape-rendering='crispEdges'%3E%3Cpath fill='%232e2440' d='M0 0h7v1H0zM1 1h5v1H1zM2 2h3v1H2zM3 3h1v1H3z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 0.75rem auto;
+}
+select.field:hover {
+  background-color: var(--color-zinc-50);
+}
+select.field option {
+  background: var(--color-white);
+  color: var(--ink);
+}
+
 /* One clear, chunky focus ring for everything you can tab to. */
 :focus-visible {
   outline: 3px dashed var(--ink);
   outline-offset: 3px;
 }
+/* Inputs and dropdowns get a solid sky-blue ring instead of the dashed one. */
 .field:focus-visible {
-  outline-color: var(--series-1);
+  outline: 3px solid var(--color-sky);
+  outline-offset: 2px;
 }
 
 /* Square pixel-style frame, used around avatars and icons. */

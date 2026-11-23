@@ -21,7 +21,8 @@ export function AiSummary({ username }: { username: string }) {
 
   function analyze() {
     setEmptyResult(false);
-    void complete("");
+    // "Regenerate" asks the server for a new analysis instead of the saved one.
+    void complete("", { body: { username, fresh: completion.length > 0 } });
   }
 
   const hasResult = completion.length > 0;

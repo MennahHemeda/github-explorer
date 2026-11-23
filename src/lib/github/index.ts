@@ -1,6 +1,7 @@
 // Public entry point: import from "@/lib/github" instead of individual files.
 export { getUser } from "./users";
 export { getAllRepos } from "./repos";
+export { MAX_REPOS } from "./limits";
 export { getContributions } from "./contributions";
 export { buildUserStats } from "./stats";
 export { isValidUsername, normalizeUsername } from "./validation";

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Repo } from "@/lib/github";
+import { MAX_REPOS } from "@/lib/github/limits";
 import type { Note } from "@/lib/notes/types";
 import { RepoCard } from "./repo-card";
 
@@ -22,12 +23,14 @@ const SORTERS: Record<SortKey, (a: Repo, b: Repo) => number> = {
  */
 interface RepoListProps {
   repos: Repo[];
+  /** How many public repositories GitHub says the user has. */
+  totalCount: number;
   login: string;
   /** The visitor's notes, keyed by repository name. */
   notesByRepo: Record<string, Note[]>;
 }
 
-export function RepoList({ repos, login, notesByRepo }: RepoListProps) {
+export function RepoList({ repos, totalCount, login, notesByRepo }: RepoListProps) {
   const [query, setQuery] = useState("");
   const [language, setLanguage] = useState("all");
   const [sort, setSort] = useState<SortKey>("updated");
@@ -121,6 +124,13 @@ export function RepoList({ repos, login, notesByRepo }: RepoListProps) {
           )}
         </div>
       </div>
+
+      {repos.length >= MAX_REPOS && totalCount > repos.length && (
+        <p className="mt-4 bg-zinc-100 px-4 py-3 text-sm text-zinc-700">
+          This account has {totalCount.toLocaleString("en-US")} repositories. The {MAX_REPOS.toLocaleString("en-US")} most
+          recently updated are shown, to stay within GitHub&apos;s request limits.
+        </p>
+      )}
 
       {filtered.length === 0 ? (
         <p className="mt-8 text-center text-zinc-500">

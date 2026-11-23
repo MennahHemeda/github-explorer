@@ -57,7 +57,7 @@ export default async function UserPage(props: PageProps<"/users/[username]">) {
           <ActivityMap username={user.login} />
         </Suspense>
         <AiSummary username={user.login} />
-        <RepoList repos={repos} login={user.login} notesByRepo={notesByRepo} />
+        <RepoList repos={repos} totalCount={user.public_repos} login={user.login} notesByRepo={notesByRepo} />
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 A pastel, game-styled explorer for GitHub: search any user, see a year of their activity, browse **all** of their repositories, compare two developers side by side, get an **AI analysis** of a profile, and keep **private notes** on users and repositories.
 
 **Live demo:** https://github-explorer-lilac-one.vercel.app
-**Stack:** Next.js 16 (App Router) · TypeScript (strict) · Tailwind CSS 4 · GitHub REST + GraphQL APIs · Vercel AI SDK + Google Gemini · Neon Postgres · deployed on Vercel
+**Stack:** Next.js 16 (App Router) · TypeScript (strict) · Tailwind CSS 4 · GitHub REST + GraphQL APIs · Vercel AI SDK with Google Gemini and Groq · Neon Postgres · deployed on Vercel
 
 ---
 
@@ -38,8 +38,11 @@ A pastel, game-styled explorer for GitHub: search any user, see a year of their 
 ### AI analysis (`/api/analyze`)
 - The browser sends only a **username**. The server loads the data itself, so users can't inject their own text into the prompt.
 - The model gets a **compact, pre-computed brief** (totals, recent vs. earlier activity, top repos) instead of raw JSON, which is cheaper, faster and more accurate. The prompt requires every point to cite real data.
-- **Model fallback:** if a Gemini model is busy, out of quota, unavailable, or finishes without text *before writing anything*, the next model is tried. Each model has its own free quota.
-- The response is streamed, has a time limit, retries are capped to protect the quota, and errors are explained to the user.
+- **Built not to fail**, in three layers:
+  1. **Saved analyses:** each result is stored in Postgres and reused for 24 hours, so repeat visits are instant and use no AI quota. **Regenerate** asks for a new one.
+  2. **Two providers with fallback:** Google Gemini and Groq (Llama) models, alternating. If a model is busy, out of quota, unavailable, errors mid-request or returns nothing *before writing anything*, the next one is tried (`src/lib/ai/stream-with-fallback.ts`).
+  3. **Last resort:** if every model fails (or GitHub is down), the most recent saved analysis is shown instead of an error.
+- The response is streamed, has an overall time limit, and retries are capped to protect free quotas.
 
 ### Notes
 - Stored in **Postgres (Neon)**. Schema: [`db/schema.sql`](db/schema.sql).
@@ -75,7 +78,7 @@ git clone https://github.com/MennahHemeda/github-explorer.git
 cd github-explorer
 npm install
 cp .env.example .env.local     # then fill in the values below
-npm run db:setup               # creates the notes table (safe to re-run)
+npm run db:setup               # creates the database tables (safe to re-run)
 npm run dev                    # http://localhost:3000
 ```
 
@@ -83,6 +86,7 @@ npm run dev                    # http://localhost:3000
 |---|---|---|
 | `GITHUB_TOKEN` | Yes | GitHub → Settings → Developer settings → Fine-grained token (public repositories, read-only). Raises the limit from 60 to 5,000 requests/hour and is required for GraphQL |
 | `GOOGLE_GENERATIVE_AI_API_KEY` | For AI | [Google AI Studio](https://aistudio.google.com) → Get API key |
+| `GROQ_API_KEY` | Recommended | [Groq console](https://console.groq.com) → API Keys. Second AI provider, used when Gemini is busy |
 | `DATABASE_URL` | For notes | Any Postgres. On Vercel: Storage → Neon |
 | `GEMINI_MODEL` | No | A model to try first, before the built-in fallback list |
 
@@ -91,12 +95,11 @@ The app degrades gracefully: without a database, notes are disabled with a clear
 ## Deploying to Vercel
 
 1. Import the repository in Vercel. Next.js is detected automatically.
-2. Add `GITHUB_TOKEN` and `GOOGLE_GENERATIVE_AI_API_KEY` under **Settings → Environment Variables**.
+2. Add `GITHUB_TOKEN`, `GOOGLE_GENERATIVE_AI_API_KEY` and `GROQ_API_KEY` under **Settings → Environment Variables**.
 3. **Storage → Create Database → Neon → Connect.** This sets `DATABASE_URL`.
 4. Run `npm run db:setup` once with that `DATABASE_URL`, then deploy.
 
 ## Possible next steps
 
-- Cache AI analyses in the database, so each profile is analyzed once per day.
 - Sign in with GitHub, so notes follow the user across devices.
 - Tests: unit tests for `lib/github` (pagination, stats) and Playwright end-to-end tests for the main flows.
