@@ -3,9 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isValidUsername, loadProfile } from "@/lib/github";
 import { AiSummary } from "@/components/ai-summary";
+import { ProfileNotes } from "@/components/notes/profile-notes";
 import { ProfileCard } from "@/components/profile-card";
 import { RateLimitNotice, UnreachableNotice } from "@/components/rate-limit-notice";
 import { RepoList } from "@/components/repo-list";
+import { getNotesForProfile, groupByRepo } from "@/lib/notes/queries";
 
 export async function generateMetadata(props: PageProps<"/users/[username]">): Promise<Metadata> {
   const { username } = await props.params;
@@ -19,7 +21,8 @@ export default async function UserPage(props: PageProps<"/users/[username]">) {
     notFound();
   }
 
-  const result = await loadProfile(username);
+  // GitHub data and the visitor's notes load in parallel.
+  const [result, notes] = await Promise.all([loadProfile(username), getNotesForProfile(username)]);
 
   if (result.status === "not-found") {
     notFound();
@@ -33,6 +36,7 @@ export default async function UserPage(props: PageProps<"/users/[username]">) {
 
   const { user, repos } = result;
   const totalStars = repos.reduce((sum, repo) => sum + repo.stars, 0);
+  const notesByRepo = groupByRepo(notes);
 
   return (
     <div className="flex flex-col gap-8">
@@ -46,7 +50,8 @@ export default async function UserPage(props: PageProps<"/users/[username]">) {
         </Link>
       </div>
       <AiSummary username={user.login} />
-      <RepoList repos={repos} />
+      <ProfileNotes login={user.login} notes={notesByRepo[""] ?? []} />
+      <RepoList repos={repos} login={user.login} notesByRepo={notesByRepo} />
     </div>
   );
 }

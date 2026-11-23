@@ -3,6 +3,7 @@ import Link from "next/link";
 const NAV_LINKS = [
   { href: "/", label: "Search" },
   { href: "/compare", label: "Compare" },
+  { href: "/notes", label: "My notes" },
 ];
 
 export function SiteHeader() {

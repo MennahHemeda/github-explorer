@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Repo } from "@/lib/github";
+import type { Note } from "@/lib/notes/types";
 import { RepoCard } from "./repo-card";
 
 const PAGE_SIZE = 30;
@@ -19,11 +20,20 @@ const SORTERS: Record<SortKey, (a: Repo, b: Repo) => number> = {
  * so changing a filter is instant and costs no extra GitHub API calls.
  * Only PAGE_SIZE cards are rendered at a time, so users with 1,000+ repos stay fast.
  */
-export function RepoList({ repos }: { repos: Repo[] }) {
+interface RepoListProps {
+  repos: Repo[];
+  login: string;
+  /** The visitor's notes, keyed by repository name. */
+  notesByRepo: Record<string, Note[]>;
+}
+
+export function RepoList({ repos, login, notesByRepo }: RepoListProps) {
   const [query, setQuery] = useState("");
   const [language, setLanguage] = useState("all");
   const [sort, setSort] = useState<SortKey>("updated");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [onlyWithNotes, setOnlyWithNotes] = useState(false);
+  const notedCount = repos.filter((repo) => notesByRepo[repo.name]?.length).length;
 
   // Languages ordered by how many repos use them.
   const languages = useMemo(() => {
@@ -37,6 +47,7 @@ export function RepoList({ repos }: { repos: Repo[] }) {
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();
     return repos
+      .filter((repo) => !onlyWithNotes || notesByRepo[repo.name]?.length)
       .filter((repo) => language === "all" || repo.language === language)
       .filter(
         (repo) =>
@@ -45,7 +56,7 @@ export function RepoList({ repos }: { repos: Repo[] }) {
           repo.description?.toLowerCase().includes(term),
       )
       .sort(SORTERS[sort]);
-  }, [repos, query, language, sort]);
+  }, [repos, query, language, sort, onlyWithNotes, notesByRepo]);
 
   // Any filter change starts again from the first page.
   function updateFilter<T>(setter: (value: T) => void) {
@@ -98,6 +109,16 @@ export function RepoList({ repos }: { repos: Repo[] }) {
             <option value="stars">Most stars</option>
             <option value="name">Name</option>
           </select>
+          {notedCount > 0 && (
+            <label className="flex h-10 items-center gap-2 whitespace-nowrap px-1 text-sm">
+              <input
+                type="checkbox"
+                checked={onlyWithNotes}
+                onChange={(event) => updateFilter(setOnlyWithNotes)(event.target.checked)}
+              />
+              With notes ({notedCount})
+            </label>
+          )}
         </div>
       </div>
 
@@ -110,7 +131,7 @@ export function RepoList({ repos }: { repos: Repo[] }) {
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
             {visible.map((repo) => (
               <li key={repo.id}>
-                <RepoCard repo={repo} />
+                <RepoCard repo={repo} login={login} notes={notesByRepo[repo.name] ?? []} />
               </li>
             ))}
           </ul>

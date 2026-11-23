@@ -1,8 +1,21 @@
+"use client";
+
+import { useState } from "react";
 import type { Repo } from "@/lib/github";
+import type { Note } from "@/lib/notes/types";
 import { formatCount, formatDate } from "@/lib/format";
 import { LanguageDot } from "./language-dot";
+import { NotesThread } from "./notes/notes-thread";
 
-export function RepoCard({ repo }: { repo: Repo }) {
+interface RepoCardProps {
+  repo: Repo;
+  login: string;
+  notes: Note[];
+}
+
+export function RepoCard({ repo, login, notes }: RepoCardProps) {
+  const [showNotes, setShowNotes] = useState(false);
+
   return (
     <article className="flex h-full flex-col rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-600">
       <div className="flex items-start justify-between gap-2">
@@ -29,7 +42,29 @@ export function RepoCard({ repo }: { repo: Repo }) {
         <span title={`${repo.stars} stars`}>★ {formatCount(repo.stars)}</span>
         <span title={`${repo.forks} forks`}>⑂ {formatCount(repo.forks)}</span>
         <span>Updated {formatDate(repo.pushedAt ?? repo.updatedAt)}</span>
+        <button
+          type="button"
+          onClick={() => setShowNotes((open) => !open)}
+          aria-expanded={showNotes}
+          className={`ml-auto rounded-md px-2 py-0.5 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 ${
+            notes.length ? "font-medium text-zinc-900 dark:text-zinc-100" : ""
+          }`}
+        >
+          📝 {notes.length ? `Notes (${notes.length})` : "Add note"}
+        </button>
       </div>
+
+      {showNotes && (
+        <div className="mt-3 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+          <NotesThread
+            login={login}
+            repo={repo.name}
+            notes={notes}
+            placeholder={`Note about ${repo.name}…`}
+            autoFocus={notes.length === 0}
+          />
+        </div>
+      )}
     </article>
   );
 }

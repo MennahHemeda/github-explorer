@@ -6,11 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:setup": "node --env-file=.env.local scripts/setup-db.mjs"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.124",
     "@ai-sdk/react": "^4.0.185",
+    "@neondatabase/serverless": "^1.2.1",
     "ai": "^7.0.180",
     "next": "16.4.6",
     "react": "19.3.0",
