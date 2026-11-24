@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Fredoka, Nunito } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
@@ -29,6 +30,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <SiteHeader />
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 sm:px-6 lg:px-8">{children}</main>
+        {/* Vercel Web Analytics: anonymous visit counts, no cookies. Only reports on Vercel deployments. */}
+        <Analytics />
       </body>
     </html>
   );

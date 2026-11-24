@@ -14,6 +14,7 @@
     "@ai-sdk/groq": "^4.0.86",
     "@ai-sdk/react": "^4.0.185",
     "@neondatabase/serverless": "^1.2.1",
+    "@vercel/analytics": "^2.0.1",
     "ai": "^7.0.180",
     "next": "16.4.6",
     "react": "19.3.0",
